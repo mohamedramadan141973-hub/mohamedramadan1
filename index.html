@@ -1,0 +1,39 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>مراجعة التربية الإسلامية – الصف الثاني عشر</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap">
+<style>
+:root{--bg:#fbf5e6;--card:#fff;--tx:#1f1a17;--mar:#8a1538;--gold:#b8892b;--gr:#0f6b3f;--ln:#e6d8b5;--bad:#b3261e}
+@media(prefers-color-scheme:dark){:root{--bg:#17110f;--card:#241a17;--tx:#f3e9d2;--mar:#e0869f;--gold:#d9b25a;--gr:#5fcf9f;--ln:#4a3a2c;--bad:#f08a82}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:Cairo,Tahoma,sans-serif;line-height:1.8}
+header{background:#8a1538;color:#fff;text-align:center;padding:16px 10px;border-bottom:5px double #b8892b}header h1{margin:4px 0;font-size:1.3rem}header p{margin:0;color:#f4e2b0;font-size:.9rem}
+main{max-width:860px;margin:0 auto;padding:14px}.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.sc{background:var(--card);border:2px solid var(--gold);border-radius:14px;padding:14px 8px;cursor:pointer;color:var(--tx);font:inherit;display:flex;flex-direction:column;align-items:center}
+.sc b{font-size:1.8rem}.sc span{font-weight:700;color:var(--mar)}.sc small{opacity:.75}
+.q{background:var(--card);border:1px solid var(--ln);border-right:5px solid var(--mar);border-radius:10px;padding:12px;margin:12px 0}.q h3{margin:0 0 6px;font-size:1.05rem;color:var(--mar)}
+.o,.bt{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--gold);background:transparent;color:var(--tx);padding:6px 12px}.o{display:block;width:100%;text-align:right;margin:6px 0}.bt{background:var(--gold);color:#fff;margin:6px 4px 0 0}
+.ok{background:var(--gr);color:#fff;border-color:var(--gr)}.no{background:var(--bad);color:#fff;border-color:var(--bad)}
+.a{background:rgba(15,107,63,.1);border-radius:8px;padding:8px 12px;margin-top:8px}textarea,input{width:100%;font:inherit;background:var(--bg);color:var(--tx);border:1px solid var(--ln);border-radius:6px;padding:8px;margin:4px 0}
+.bar{position:sticky;top:0;background:var(--card);border:2px solid var(--gold);border-radius:10px;padding:8px 12px;margin:10px 0;font-weight:700;text-align:center;z-index:2}.p{opacity:.6;font-size:.85rem}
+</style></head><body>
+<header><button class="bt" onclick="cur=null;draw()">🏠 الصفحة الرئيسية</button><h1>مراجعة شاملة – مادة التربية الإسلامية</h1><p>الصف الثاني عشر (المنهج القطري) · الفصل الدراسي الأول 2026–2027 · إعداد ومراجعة: محمد رمضان</p></header>
+<main id="app">جارٍ التحميل…</main>
+<script>
+let D=[],cur=null,sid=localStorage.sid,nm=localStorage.nm,R=JSON.parse(localStorage.R||'{}');
+const E=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const api=b=>fetch('/api/log',{method:'POST',body:JSON.stringify({sid,name:nm,...b})}).catch(()=>{});
+const A=()=>document.getElementById('app'),K=(i,k)=>i+'.'+k;
+const sc=i=>D[i].q.filter((_,k)=>R[K(i,k)]===1).length,an=i=>D[i].q.filter((_,k)=>R[K(i,k)]!==undefined).length;
+fetch('questions.json').then(r=>r.json()).then(d=>{D=d;if(!sid)gate();else{api({type:'visit'});draw()}}).catch(()=>A().textContent='تعذر تحميل الأسئلة');
+function gate(){A().innerHTML='<div class="q"><h3>أهلاً بك! اكتب اسمك للبدء</h3><input id="n" placeholder="الاسم الثلاثي"><button class="bt" onclick="go()">ابدأ</button></div>'}
+function go(){const v=document.getElementById('n').value.trim();if(v.length<2)return;nm=v;sid=Date.now().toString(36)+Math.random().toString(36).slice(2,8);localStorage.sid=sid;localStorage.nm=nm;api({type:'join'});api({type:'visit'});draw()}
+function draw(){if(cur===null){A().innerHTML=`<p>مرحباً <b>${E(nm)}</b> — اختر القسم:</p><div class="g">`+D.map((s,i)=>`<button class="sc" onclick="cur=${i};draw()"><b>${s.ic}</b><span>${E(s.t)}</span><small>${an(i)} من ${s.q.length} أُجيب · الدرجة ${sc(i)}</small></button>`).join('')+'</div>';return}
+ const s=D[cur];A().innerHTML=`<h2>${s.ic} ${E(s.t)}</h2><div class="bar" id="bar"></div>`+s.q.map((q,k)=>card(q,k)).join('')+'<button class="bt" onclick="rs()">إعادة التمرين من البداية</button>';bar()}
+function bar(){const b=document.getElementById('bar');if(!b)return;const t=D[cur].q.length,a=an(cur),c=sc(cur);b.innerHTML=`درجتك: ${c} من ${t} ${a==t?`(${Math.round(c*100/t)}%) ✅ انتهى التمرين`:`— أجبت ${a} من ${t}`}`}
+function card(q,k){const r=R[K(cur,k)];let h=`<article class="q"><h3>${k+1}) ${E(q.q)}</h3>`;
+ if(q.k=='m')h+=q.o.map((o,j)=>`<button class="o ${r!==undefined&&j==q.c?'ok':''}" onclick="pk(this,${k},${j})">${E(o)}</button>`).join('');
+ else h+=`<textarea rows="3" placeholder="اكتب إجابتك هنا..."></textarea><button class="bt" onclick="sh(this)">أظهر الإجابة الصحيحة</button><div class="a" hidden><b>الإجابة الصحيحة:</b><br>${E(q.a).replace(/\n/g,'<br>')}<div>${r===undefined?`<button class="bt" onclick="ans(${k},1,this)">✔ إجابتي كانت صحيحة</button><button class="bt" style="background:var(--bad)" onclick="ans(${k},0,this)">✘ لم أصب</button>`:(r?'✔ سُجّلت صحيحة':'✘ سُجّلت خاطئة')}</div></div>`;
+ return h+`<div class="p">${q.s||'من الملزمة'} – صفحة ${q.p||''}</div></article>`}
+function sh(b){const d=b.nextElementSibling;d.hidden=!d.hidden}
+function ans(k,ok,el){const key=K(cur,k);if(R[key]!==undefined)return;R[key]=ok;localStorage.R=JSON.stringify(R);api({type:'answer',q:key,ok:!!ok});if(el)el.parentNode.textContent=ok?'✔ سُجّلت صحيحة':'✘ سُجّلت خاطئة';bar()}
+function pk(b,k,j){const q=D[cur].q[k];if(R[K(cur,k)]!==undefined)return;[...b.parentNode.querySelectorAll('.o')].forEach((x,i)=>{if(i==q.c)x.classList.add('ok');else if(i==j)x.classList.add('no')});ans(k,j==q.c?1:0)}
+function rs(){if(!confirm('مسح إجاباتك في هذا القسم؟'))return;D[cur].q.forEach((_,k)=>delete R[K(cur,k)]);localStorage.R=JSON.stringify(R);draw()}
+</script></body></html>
